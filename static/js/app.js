@@ -6,6 +6,9 @@ var Messages = React.createClass({
       cache: false,
       success: function(data) {
         this.setState({messages: data.messages});
+        // TODO: convert this into a key -> value store, 
+        // also, set the max message ID ill gotten here, 
+        // and do next query using that ID
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
