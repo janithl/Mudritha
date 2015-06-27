@@ -1,21 +1,13 @@
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, jsonify, g, request, session
 import time
-import hmac
-import hashlib
-import base64
 import mudconfig
+import mudutils
 
 class MudrithaData:
     """
         Class for storing all db related functions
     """
-
-    # utils 
-    def sha256(self, message):
-        """Get SHA256 digest of a string"""
-        digest = hmac.new(mudconfig.secretkey, msg=message, digestmod=hashlib.sha256).digest()
-        return base64.b64encode(digest).decode()
 
     # common functions
 
@@ -55,11 +47,11 @@ class MudrithaData:
         """
 
         db = self.get_db()
-        db.execute('INSERT INTO message (msg_text, pub_date, usr_iden) VALUES (?, ?, ?)', [message, int(time.time() * 1000), self.sha256(ip_addr)])
+        db.execute('INSERT INTO message (msg_text, pub_date, usr_iden) VALUES (?, ?, ?)', [message, int(time.time() * 1000), mudutils.sha256(ip_addr)])
         db.commit()
 
-    def get_messages(self, count):
+    def get_messages(self, lastid):
         db = self.get_db()
         cur = db.cursor()
-        cur.execute('SELECT msg_id, msg_text, pub_date, usr_iden FROM message ORDER BY msg_id DESC LIMIT ?',[count])
+        cur.execute('SELECT msg_id, msg_text, pub_date, usr_iden FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
         return [list(row) for row in cur.fetchall()]

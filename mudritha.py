@@ -25,9 +25,9 @@ def initdb_command():
     mud.init_db(app)
     return jsonify({ 'status': 'Initialized the database.' })
 
-@app.route('/api/public/getmessages/<count>/')
-def get_messages(count):
-    return jsonify({ 'messages': mud.get_messages(count) })
+@app.route('/api/public/getmessages/<lastid>/')
+def get_messages(lastid):
+    return jsonify({ 'messages': mud.get_messages(lastid) })
 
 @app.route('/api/public/addmessage/', methods=['POST'])
 def add_message():

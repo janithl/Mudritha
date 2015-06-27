@@ -1,7 +1,7 @@
 var Messages = React.createClass({
   loadMessagesFromServer: function() {
     $.ajax({
-      url: this.props.url,
+      url: './api/public/getmessages/0/',
       dataType: 'json',
       cache: false,
       success: function(data) {
@@ -62,6 +62,6 @@ var Timestamp = React.createClass({
 });
 
 var app = React.render(
-  <Messages url="./api/public/getmessages/10/" pollInterval={30000} />,
+  <Messages pollInterval={30000} />,
   document.getElementById('message-thread')
 );
