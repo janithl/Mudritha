@@ -55,7 +55,7 @@ var Timestamp = React.createClass({
     else if(seconds > 60) {
       return (<small>({Math.floor(seconds / 60)} minutes ago)</small>);
     }
-    if(seconds > 3600) {
+    else {
       return (<small>({seconds} seconds ago)</small>);
     }
   }

@@ -45,13 +45,12 @@ class MudrithaData:
         """
             Add a message to the message table
         """
-
         db = self.get_db()
-        db.execute('INSERT INTO message (msg_text, pub_date, usr_iden) VALUES (?, ?, ?)', [message, int(time.time() * 1000), mudutils.sha256(ip_addr)])
+        db.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [message, int(time.time() * 1000), ip_addr])
         db.commit()
 
     def get_messages(self, lastid):
         db = self.get_db()
         cur = db.cursor()
-        cur.execute('SELECT msg_id, msg_text, pub_date, usr_iden FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
+        cur.execute('SELECT msg_id, msg_text, pub_date, ip_addr FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
         return [list(row) for row in cur.fetchall()]

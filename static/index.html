@@ -15,7 +15,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
-    #message-thread {margin-top:60px;}
+    #main-content   {margin-top:60px;}
+    #message-thread {margin-top:10px;}
     .message-image  {height:24px; width:24px; margin-right:6px;}
     </style>
   </head>
@@ -44,75 +45,10 @@
     <div id="main-content" class="container-fluid">
       <div class="col-md-9 col-xs-12"></div>
       <div class="col-md-3 col-xs-12">
+        <textarea id="message-input" class="form-control" placeholder="Type here..." rows="3"></textarea>
         <div id="message-thread"></div>
-        <div>Input</div>
       </div>
     </div>
-
-    <div class="bar bar-standard bar-header-secondary">
-      <form>
-        <input type="search" placeholder="Search">
-      </form>
-    </div>
-
-    <div id="main-content" class="content"></div><!-- /.content -->
-
-    <!-- Settings modal -->
-    <div id="settingsModal" class="modal">
-      <header class="bar bar-nav">
-        <a class="icon icon-close pull-right" href="#settingsModal"></a>
-        <h1 class="title">Settings</h1>
-      </header>
-
-      <div class="content">
-        <form class="input-group">
-          <input type="text" placeholder="Full name">
-          <input type="email" placeholder="Email">
-          <input type="text" placeholder="Username">
-        </form>
-
-        <h5 class="content-padded">App settings</h5>
-
-        <ul class="table-view">
-          <li class="table-view-cell media">
-            <span class="media-object pull-left icon icon-sound"></span>
-            <div class="media-body">
-              Enable sounds
-            </div>
-            <div class="toggle">
-              <div class="toggle-handle"></div>
-            </div>
-          </li>
-          <li class="table-view-cell media">
-            <span class="media-object pull-left icon icon-person"></span>
-            <div class="media-body">
-              Parental controls
-            </div>
-            <div class="toggle">
-              <div class="toggle-handle"></div>
-            </div>
-          </li>
-        </ul>
-        <div class="content-padded">
-          <button class="btn btn-positive btn-block">Save settings</button>
-        </div>
-      </div>
-    </div><!-- /.modal -->
-
-    <!-- Compose modal -->
-    <div id="composeModal" class="modal">
-      <header class="bar bar-nav">
-        <a class="icon icon-left pull-left" href="#composeModal"></a>
-        <h1 class="title">Post Message</h1>
-      </header>
-
-      <div class="content">
-        <form class="content-padded">
-          <textarea id="post-message" rows="10"></textarea>
-          <button onclick="submitMessage()" class="btn btn-positive btn-block" type="button">Post</button>
-        </form>
-      </div>
-    </div><!-- /.modal -->
   </body>
 
   <script type="text/javascript" src="static/js/jquery.min.js"></script>
@@ -121,18 +57,19 @@
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
   <script type="text/jsx;harmony=true" src="static/js/app.js"></script>
   <script type="text/javascript">
-  function submitMessage() {
-    $.ajax({
-      url: './api/public/addmessage/',
-      dataType: 'text',
-      type: 'POST',
-      data: {text: $('#post-message').val()},
-      success: function(data) {
-        app.loadMessagesFromServer();
-        $('#post-message').val('');
-        $('#composeModal').removeClass('active');
-      }.bind(this)
-    });
-  }
+  $('#message-input').on('keypress', function(e) {
+    if(e.which === 13 && !e.shiftKey) {
+      $.ajax({
+        url: './api/public/addmessage/',
+        dataType: 'text',
+        type: 'POST',
+        data: {text: $('#message-input').val()},
+        success: function(data) {
+          app.loadMessagesFromServer();
+          $('#message-input').val('');
+        }.bind(this)
+      });
+    }
+  });
   </script>
 </html>
