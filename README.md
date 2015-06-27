@@ -1,3 +1,5 @@
+![Mudritha](https://raw.githubusercontent.com/janithl/mudritha/master/static/img/mudritha-logo-large.png)
+
 # Mudritha
 
 Mudritha is currently just a very unsecure echo server, 
