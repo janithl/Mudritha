@@ -37,13 +37,23 @@ def get_messages(lastid):
 
 @app.route('/api/public/addmessage/', methods=['POST'])
 def add_message():
-    mud.add_message(request.form['text'], request.remote_addr)
-    return jsonify({ 'status': 'Added message.' })
+    msg_id = mud.add_message(request.form['text'], request.remote_addr)
+    if(msg_id == None):
+        return jsonify({ 'status': 'Message adding failed.' })
+    else:
+        return jsonify({ 'status': 'Added message.', 'msg_id' : msg_id })
+
+@app.route('/api/public/getdocuments/<lastid>/')
+def get_documents(lastid):
+    return jsonify({ 'documents': mud.get_documents(lastid) })
 
 @app.route('/api/public/addlink/', methods=['POST'])
 def add_link():
-    mud.add_document(request.form['url'])
-    return jsonify({ 'status': 'Added document.' })
+    doc_id = mud.add_document(request.form['url'])
+    if(doc_id == None):
+        return jsonify({ 'status': 'Document already exists.' })
+    else:
+        return jsonify({ 'status': 'Added document.', 'doc_id' : doc_id })
 
 @app.route('/api/public/getterm/<term>/')
 def get_term(term):

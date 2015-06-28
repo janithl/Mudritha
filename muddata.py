@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, jsonify, g, request, session, Markup
 import time
@@ -45,17 +47,32 @@ class MudrithaData:
         """
             Add a message to the message table
         """
-        db = self.get_db()
-        db.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [Markup(message).striptags(), int(time.time() * 1000), ip_addr])
-        db.commit()
+        db  = self.get_db()
+        cur = db.cursor()
+        msg_id = None
+
+        try:
+            cur.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [Markup(message).striptags(), int(time.time() * 1000), ip_addr])
+            db.commit()
+            msg_id = cur.lastrowid
+        except:
+            print 'Unexpected Error'
+
+        return msg_id
 
     def get_messages(self, lastid):
+        """
+            Get set of messages with message ids greater than param lastid
+        """
         db  = self.get_db()
         cur = db.cursor()
         cur.execute('SELECT msg_id, msg_text, pub_date, ip_addr FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
         return [list(row) for row in cur.fetchall()]
 
     def init_dictionary(self):
+        """
+            Import stock sinhala dictionary and add it to db
+        """
         import sinhaladict
         db = self.get_db()
         for item in sinhaladict.sinhaladict:
@@ -63,6 +80,9 @@ class MudrithaData:
         db.commit()
 
     def get_term_id(self, term):
+        """
+            Given a term, get its term id
+        """
         db  = self.get_db()
         cur = db.cursor()
         cur.execute('SELECT term_id FROM term WHERE term LIKE ?',[term])
@@ -72,9 +92,30 @@ class MudrithaData:
     def add_document(self, url):
         """
             Add a doc to the document table
+            Calls the utils class and its HTML page getter/parser
         """
         db  = self.get_db()
+        cur = db.cursor()
         doc = mudutils.parse_html(url)
-        db.execute("""INSERT INTO document (doc_title, doc_body, doc_image, doc_link, add_date) 
-        VALUES (?, ?, ?, ?, ?)""", [doc['title'], doc['body'], doc['image'], url, int(time.time() * 1000)])
-        db.commit()
+        doc_id = None
+
+        try:
+            cur.execute("""INSERT INTO document (doc_title, doc_body, doc_image, doc_link, add_date) 
+            VALUES (?, ?, ?, ?, ?)""", [doc['title'], doc['body'], doc['image'], url, int(time.time() * 1000)])
+            db.commit()
+            doc_id = cur.lastrowid
+        except sqlite3.IntegrityError:
+            print 'IntegrityError, the document already exists'
+
+        return doc_id
+
+    def get_documents(self, lastid):
+        """
+            Get set of documents with doc ids greater than param lastid
+        """
+        db  = self.get_db()
+        cur = db.cursor()
+        cur.execute('SELECT doc_id, doc_title, doc_image, add_date FROM document WHERE doc_id > ? ORDER BY doc_id DESC',[lastid])
+        return [list(row) for row in cur.fetchall()]
+
+    #def tokenize_document(self, )

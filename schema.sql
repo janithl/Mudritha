@@ -9,7 +9,7 @@ create table message(
 drop table if exists term;
 create table term(
 	term_id integer primary key autoincrement,
-	term text not null,
+	term text not null unique,
 	lang text not null,
 	doc_freq integer
 );
@@ -19,7 +19,7 @@ create table document(
 	doc_id integer primary key autoincrement,
 	doc_title text,
 	doc_body text not null,
-	doc_link text not null,
+	doc_link text not null unique,
 	doc_image text,
 	add_date integer not null,
 	tw_score integer,
