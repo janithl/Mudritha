@@ -39,5 +39,9 @@ def add_message():
     mud.add_message(request.form['text'], request.remote_addr)
     return jsonify({ 'status': 'Added message.' })
 
+@app.route('/api/public/getterm/<term>/')
+def get_term(term):
+    return jsonify({ 'term_id': mud.get_term_id(term) })
+
 if __name__ == '__main__':
     app.run(debug=True)

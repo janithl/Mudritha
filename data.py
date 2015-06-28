@@ -65,6 +65,6 @@ class MudrithaData:
     def get_term_id(self, term):
         db = self.get_db()
         cur = db.cursor()
-        cur.execute('SELECT term_id FROM term WHERE term LIKE ? LIMIT 1',[term])
-        row = cur.fetch()
-        return row['term']
+        cur.execute('SELECT term_id FROM term WHERE term LIKE ?',[term])
+        row = cur.fetchone()
+        return None if (row == None) else row[0]
