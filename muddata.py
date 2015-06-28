@@ -52,7 +52,8 @@ class MudrithaData:
         msg_id = None
 
         try:
-            cur.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [Markup(message).striptags(), int(time.time() * 1000), ip_addr])
+            cur.execute("""INSERT INTO message(msg_text, pub_date, ip_addr) 
+            VALUES (?, ?, ?)""", [Markup(message).striptags(), int(time.time() * 1000), ip_addr])
             db.commit()
             msg_id = cur.lastrowid
         except:
@@ -66,7 +67,8 @@ class MudrithaData:
         """
         db  = self.get_db()
         cur = db.cursor()
-        cur.execute('SELECT msg_id, msg_text, pub_date, ip_addr FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
+        cur.execute("""SELECT msg_id, msg_text, pub_date, ip_addr FROM message 
+        WHERE msg_id > ? ORDER BY msg_id DESC""",[lastid])
         return [list(row) for row in cur.fetchall()]
 
     def init_dictionary(self):
@@ -76,7 +78,7 @@ class MudrithaData:
         import sinhaladict
         db = self.get_db()
         for item in sinhaladict.sinhaladict:
-            db.execute('INSERT INTO term (term, lang) VALUES (?, \'si\')', [item])
+            db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
         db.commit()
 
     def get_term_id(self, term):
@@ -100,8 +102,9 @@ class MudrithaData:
         doc_id = None
 
         try:
-            cur.execute("""INSERT INTO document (doc_title, doc_body, doc_image, doc_link, add_date) 
-            VALUES (?, ?, ?, ?, ?)""", [doc['title'], doc['body'], doc['image'], url, int(time.time() * 1000)])
+            cur.execute("""INSERT INTO document(doc_title, doc_body, doc_image, 
+            doc_link, add_date) VALUES (?, ?, ?, ?, ?)""", [doc['title'], 
+            doc['body'], doc['image'], url, int(time.time() * 1000)])
             db.commit()
             doc_id = cur.lastrowid
         except sqlite3.IntegrityError:
@@ -115,7 +118,53 @@ class MudrithaData:
         """
         db  = self.get_db()
         cur = db.cursor()
-        cur.execute('SELECT doc_id, doc_title, doc_image, add_date FROM document WHERE doc_id > ? ORDER BY doc_id DESC',[lastid])
+        cur.execute("""SELECT doc_id, doc_title, doc_image, doc_link, add_date 
+        FROM document WHERE doc_id > ? ORDER BY doc_id DESC""",[lastid])
         return [list(row) for row in cur.fetchall()]
 
-    #def tokenize_document(self, )
+    def add_docterm(self, doc_id, term_id, position):
+        """
+            Add a document/term relationship
+        """
+        db = self.get_db()
+        db.execute("""INSERT INTO docterm(doc_id, term_id, position) 
+        VALUES (?, ?, ?)""", [doc_id, term_id, position])
+
+    def get_docterms(self):
+        db  = self.get_db()
+        cur = db.cursor()
+        cur.execute("""SELECT doc_id, term_id, position 
+        FROM docterm ORDER BY doc_id DESC""",[])
+        return [list(row) for row in cur.fetchall()]
+
+    def tokenize_document(self, doc_id, text):
+        """ 
+            Given a document id and body text, tokenize it and
+            match terms with term dictionary, insert results 
+            into docterm table
+        """
+        tokenset = text.split()
+
+        for i in range(len(tokenset)):
+            term_id = self.get_term_id(tokenset[i])
+            if(term_id != None):
+                self.add_docterm(doc_id, term_id, i)
+
+    def docterm_new_documents(self):
+        """
+            Tokenizes and docterms documents that haven't been
+            already processed
+        """
+        db  = self.get_db()
+        cur = db.cursor()
+        cur.execute("""SELECT doc_id, doc_body FROM document 
+        WHERE doc_id NOT IN (SELECT doc_id FROM docterm) 
+        ORDER BY doc_id DESC""", [])
+
+        documents = [list(row) for row in cur.fetchall()]
+        print documents
+
+        for doc in documents:
+            self.tokenize_document(doc[0], doc[1])
+        
+        return len(documents)

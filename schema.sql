@@ -31,6 +31,7 @@ create table docterm(
 	doc_id integer,
 	term_id integer,
 	position integer,
+	primary key(doc_id, term_id, position),
 	foreign key(doc_id) references document(doc_id),
 	foreign key(term_id) references term(term_id)
 );

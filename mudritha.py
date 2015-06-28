@@ -31,6 +31,15 @@ def initdict_command():
     mud.init_dictionary()
     return jsonify({ 'status': 'Initialized the dictionary.' })
 
+@app.route('/api/admin/doctermnew/')
+def doctermnew_command():
+    count = mud.docterm_new_documents()
+    return jsonify({ 'status': 'Docterm\'d ' + str(count) + ' new documents.' })
+
+@app.route('/api/public/getdocterms/')
+def get_docterms():
+    return jsonify({ 'docterms': mud.get_docterms() })
+
 @app.route('/api/public/getmessages/<lastid>/')
 def get_messages(lastid):
     return jsonify({ 'messages': mud.get_messages(lastid) })
