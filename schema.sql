@@ -17,10 +17,11 @@ create table term(
 drop table if exists document;
 create table document(
 	doc_id integer primary key autoincrement,
-	doc_title text not null,
+	doc_title text,
 	doc_body text not null,
 	doc_link text not null,
-	doc_image text not null,
+	doc_image text,
+	add_date integer not null,
 	tw_score integer,
 	fb_score integer
 );

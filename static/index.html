@@ -45,7 +45,16 @@
     </nav><!-- /.navbar -->
 
     <div id="main-content" class="container-fluid">
-      <div class="col-md-9 col-xs-12"></div>
+      <div class="col-md-3 col-xs-12"></div>
+      <div class="col-md-6 col-xs-12">
+        <form class="form-inline">
+          <div class="form-group">
+            <label for="link-input">Link URL</label>
+            <input type="text" class="form-control" id="link-input" placeholder="Link URL">
+          </div>
+          <button type="button" id="link-input-button" class="btn btn-default">Submit</button>
+        </form>
+      </div>
       <div class="col-md-3 col-xs-12">
         <textarea id="message-input" class="form-control" placeholder="Type here..." rows="3"></textarea>
         <div id="message-thread"></div>
@@ -72,6 +81,19 @@
         }.bind(this)
       });
     }
+  });
+
+  $('#link-input-button').on('click', function(e) {   
+    $.ajax({
+      url: './api/public/addlink/',
+      dataType: 'text',
+      type: 'POST',
+      data: {url: $('#link-input').val()},
+      success: function(data) {
+        //app.loadMessagesFromServer();
+        $('#link-input').val('');
+      }.bind(this)
+    });
   });
   </script>
 </html>

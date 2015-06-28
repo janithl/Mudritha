@@ -9,7 +9,8 @@
 """
 
 from flask import Flask, jsonify, g, request, session, render_template
-from data import MudrithaData
+from muddata import MudrithaData
+import mudutils
 
 app = Flask(__name__)
 app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
@@ -38,6 +39,11 @@ def get_messages(lastid):
 def add_message():
     mud.add_message(request.form['text'], request.remote_addr)
     return jsonify({ 'status': 'Added message.' })
+
+@app.route('/api/public/addlink/', methods=['POST'])
+def add_link():
+    mud.add_document(request.form['url'])
+    return jsonify({ 'status': 'Added document.' })
 
 @app.route('/api/public/getterm/<term>/')
 def get_term(term):

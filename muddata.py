@@ -1,5 +1,5 @@
 from sqlite3 import dbapi2 as sqlite3
-from flask import Flask, jsonify, g, request, session
+from flask import Flask, jsonify, g, request, session, Markup
 import time
 import mudconfig
 import mudutils
@@ -46,11 +46,11 @@ class MudrithaData:
             Add a message to the message table
         """
         db = self.get_db()
-        db.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [message, int(time.time() * 1000), ip_addr])
+        db.execute('INSERT INTO message (msg_text, pub_date, ip_addr) VALUES (?, ?, ?)', [Markup(message).striptags(), int(time.time() * 1000), ip_addr])
         db.commit()
 
     def get_messages(self, lastid):
-        db = self.get_db()
+        db  = self.get_db()
         cur = db.cursor()
         cur.execute('SELECT msg_id, msg_text, pub_date, ip_addr FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
         return [list(row) for row in cur.fetchall()]
@@ -63,8 +63,18 @@ class MudrithaData:
         db.commit()
 
     def get_term_id(self, term):
-        db = self.get_db()
+        db  = self.get_db()
         cur = db.cursor()
         cur.execute('SELECT term_id FROM term WHERE term LIKE ?',[term])
         row = cur.fetchone()
         return None if (row == None) else row[0]
+
+    def add_document(self, url):
+        """
+            Add a doc to the document table
+        """
+        db  = self.get_db()
+        doc = mudutils.parse_html(url)
+        db.execute("""INSERT INTO document (doc_title, doc_body, doc_image, doc_link, add_date) 
+        VALUES (?, ?, ?, ?, ?)""", [doc['title'], doc['body'], doc['image'], url, int(time.time() * 1000)])
+        db.commit()
