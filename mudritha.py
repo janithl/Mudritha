@@ -25,6 +25,11 @@ def initdb_command():
     mud.init_db(app)
     return jsonify({ 'status': 'Initialized the database.' })
 
+@app.route('/api/admin/initdict/')
+def initdict_command():
+    mud.init_dictionary()
+    return jsonify({ 'status': 'Initialized the dictionary.' })
+
 @app.route('/api/public/getmessages/<lastid>/')
 def get_messages(lastid):
     return jsonify({ 'messages': mud.get_messages(lastid) })

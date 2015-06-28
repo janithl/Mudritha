@@ -54,3 +54,17 @@ class MudrithaData:
         cur = db.cursor()
         cur.execute('SELECT msg_id, msg_text, pub_date, ip_addr FROM message WHERE msg_id > ? ORDER BY msg_id DESC',[lastid])
         return [list(row) for row in cur.fetchall()]
+
+    def init_dictionary(self):
+        import sinhaladict
+        db = self.get_db()
+        for item in sinhaladict.sinhaladict:
+            db.execute('INSERT INTO term (term, lang) VALUES (?, \'si\')', [item])
+        db.commit()
+
+    def get_term_id(self, term):
+        db = self.get_db()
+        cur = db.cursor()
+        cur.execute('SELECT term_id FROM term WHERE term LIKE ? LIMIT 1',[term])
+        row = cur.fetch()
+        return row['term']
