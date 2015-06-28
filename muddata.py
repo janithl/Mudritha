@@ -78,7 +78,12 @@ class MudrithaData:
         import sinhaladict
         db = self.get_db()
         for item in sinhaladict.sinhaladict:
-            db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
+            try:
+                db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
+            except sqlite3.IntegrityError:
+                print 'IntegrityError, the term ' + item + ' already exists.'
+            except:
+                print 'Unexpected failure.'
         db.commit()
 
     def get_term_id(self, term):
@@ -149,6 +154,12 @@ class MudrithaData:
             term_id = self.get_term_id(tokenset[i])
             if(term_id != None):
                 self.add_docterm(doc_id, term_id, i)
+            else:
+                print 'Term not found: ' + tokenset[i]
+                if(not tokenset[i].isdigit()):
+                    db = self.get_db()
+                    db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [tokenset[i]])
+                    db.commit()
 
     def docterm_new_documents(self):
         """
