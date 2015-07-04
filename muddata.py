@@ -83,12 +83,13 @@ class MudrithaData:
 				if (item.endswith(endings)):
 					item = item[:-3]
 				
-				try:
-					db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
-				except sqlite3.IntegrityError:
-					print 'IntegrityError, the term ' + item + ' already exists.'
-				except:
-					print 'Unexpected failure.'
+				if (len(item) > 2):
+					try:
+						db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
+					except sqlite3.IntegrityError:
+						print 'IntegrityError, the term ' + item + ' already exists.'
+					except:
+						print 'Unexpected failure.'
 		db.commit()
 
 	def get_term_id(self, term):
