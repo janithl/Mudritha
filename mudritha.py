@@ -43,6 +43,10 @@ def doctermnew_command():
 @app.route('/api/public/getdocterms/')
 def get_docterms():
 	return jsonify({ 'docterms': mud.get_docterms() })
+	
+@app.route('/api/public/getpopterms/')
+def get_popterms():
+	return jsonify({ 'terms': mud.get_popular_terms() })
 
 @app.route('/api/public/getmessages/<lastid>/')
 def get_messages(lastid):

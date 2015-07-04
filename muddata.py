@@ -109,6 +109,18 @@ class MudrithaData:
 		cur = db.cursor()
 		cur.execute('SELECT term_id, term FROM term WHERE lang LIKE ?',[lang])
 		return [list(row) for row in cur.fetchall()]
+		
+	def get_popular_terms(self, lang = 'si'):
+		"""
+			Get a list of popular terms and term IDs
+		"""
+		db  = self.get_db()
+		cur = db.cursor()
+		cur.execute("""SELECT t.term_id, t.term, COUNT(*) 
+		FROM term AS t JOIN docterm AS dt ON (t.term_id = dt.term_id) 
+		WHERE t.lang LIKE ? GROUP BY dt.term_id 
+		ORDER BY COUNT(*) DESC LIMIT 20""",[lang])
+		return [list(row) for row in cur.fetchall()]
 
 	def add_document(self, url):
 		"""
@@ -158,6 +170,17 @@ class MudrithaData:
 		cur.execute("""SELECT doc_id, term_id, position 
 		FROM docterm ORDER BY doc_id DESC""",[])
 		return [list(row) for row in cur.fetchall()]
+		
+	def get_docterm_maxdocid(self):
+		"""
+			Returns the maximum doc id stored in the 
+			document/term relationships table
+		"""
+		db  = self.get_db()
+		cur = db.cursor()
+		cur.execute("SELECT MAX(doc_id) FROM docterm",[])
+		row = cur.fetchone()
+		return 0 if (row == None) else row[0]
 
 	def docterm_new_documents(self):
 		"""
@@ -165,6 +188,9 @@ class MudrithaData:
 			already processed
 		"""
 		terms = self.get_terms()
+		# very lame way to get rid of errors due to documents already
+		# existing in the document/term table
+		maxdocid = self.get_docterm_maxdocid() 
 		
 		db  = self.get_db()
 		cur = db.cursor()
@@ -172,8 +198,8 @@ class MudrithaData:
 		result = 0
 		
 		for term in terms:
-			cur.execute("""SELECT doc_id FROM document 
-			WHERE doc_body LIKE ?""", ['%' + term[1] + '%'])
+			cur.execute("""SELECT doc_id FROM document WHERE doc_body 
+			LIKE ? AND doc_id > ?""", ['%' + term[1] + '%', maxdocid])
 			row = cur.fetchone()
 			if (row != None):
 				matches.append((row[0], term[0]))
