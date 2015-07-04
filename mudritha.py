@@ -11,6 +11,10 @@
 from flask import Flask, jsonify, g, request, session, render_template
 from muddata import MudrithaData
 import mudutils
+import sys
+
+reload(sys)
+sys.setdefaultencoding("utf-8") #super important
 
 app = Flask(__name__)
 app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
@@ -34,7 +38,7 @@ def initdict_command():
 @app.route('/api/admin/doctermnew/')
 def doctermnew_command():
 	count = mud.docterm_new_documents()
-	return jsonify({ 'status': 'Docterm\'d ' + str(count) + ' new documents.' })
+	return jsonify({ 'status': 'Added ' + str(count) + ' new document/term relationships.' })
 
 @app.route('/api/public/getdocterms/')
 def get_docterms():

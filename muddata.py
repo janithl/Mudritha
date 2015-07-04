@@ -79,15 +79,16 @@ class MudrithaData:
 		db = self.get_db()
 		endings = mudutils.get_common_endings()
 		for item in sinhaladict.sinhaladict:
-			if len(item) > 2:
-				if(item.endswith(endings)):
-					item = item[:-4]
-					try:
-						db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
-					except sqlite3.IntegrityError:
-						print 'IntegrityError, the term ' + item + ' already exists.'
-					except:
-						print 'Unexpected failure.'
+			if (len(item) > 2):
+				if (item.endswith(endings)):
+					item = item[:-3]
+				
+				try:
+					db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [item])
+				except sqlite3.IntegrityError:
+					print 'IntegrityError, the term ' + item + ' already exists.'
+				except:
+					print 'Unexpected failure.'
 		db.commit()
 
 	def get_term_id(self, term):
@@ -99,6 +100,15 @@ class MudrithaData:
 		cur.execute('SELECT term_id FROM term WHERE term LIKE ?',[term])
 		row = cur.fetchone()
 		return None if (row == None) else row[0]
+		
+	def get_terms(self, lang = 'si'):
+		"""
+			Get a list of terms and term IDs
+		"""
+		db  = self.get_db()
+		cur = db.cursor()
+		cur.execute('SELECT term_id, term FROM term WHERE lang LIKE ?',[lang])
+		return [list(row) for row in cur.fetchall()]
 
 	def add_document(self, url):
 		"""
@@ -140,46 +150,35 @@ class MudrithaData:
 		VALUES (?, ?, ?)""", [doc_id, term_id, position])
 
 	def get_docterms(self):
+		"""
+			Returns list of document/term relationships
+		"""
 		db  = self.get_db()
 		cur = db.cursor()
 		cur.execute("""SELECT doc_id, term_id, position 
 		FROM docterm ORDER BY doc_id DESC""",[])
 		return [list(row) for row in cur.fetchall()]
 
-	def tokenize_document(self, doc_id, text):
-		""" 
-			Given a document id and body text, tokenize it and
-			match terms with term dictionary, insert results 
-			into docterm table
-		"""
-		tokenset = text.split()
-
-		for i in range(len(tokenset)):
-			term_id = self.get_term_id(tokenset[i])
-			if(term_id != None):
-				self.add_docterm(doc_id, term_id, i)
-			else:
-				print 'Term not found: ' + tokenset[i]
-				if(not tokenset[i].isdigit()):
-					db = self.get_db()
-					db.execute('INSERT INTO term(term, lang) VALUES (?, \'si\')', [tokenset[i]])
-					db.commit()
-
 	def docterm_new_documents(self):
 		"""
-			Tokenizes and docterms documents that haven't been
+			Finds dictionary terms inside documents that haven't been
 			already processed
 		"""
+		terms = self.get_terms()
+		
 		db  = self.get_db()
 		cur = db.cursor()
-		cur.execute("""SELECT doc_id, doc_body FROM document 
-		WHERE doc_id NOT IN (SELECT doc_id FROM docterm) 
-		ORDER BY doc_id DESC""", [])
-
-		documents = [list(row) for row in cur.fetchall()]
-		print documents
-
-		for doc in documents:
-			self.tokenize_document(doc[0], doc[1])
+		matches = []
 		
-		return len(documents)
+		for term in terms:
+			cur.execute("""SELECT doc_id FROM document 
+			WHERE doc_body LIKE ?""", ['%' + term[1] + '%'])
+			row = cur.fetchone()
+			if (row != None):
+				matches.append((row[0], term[0]))
+		
+		cur.executemany("""INSERT INTO docterm(doc_id, term_id, position) 
+		VALUES (?, ?, 0)""", matches)
+		db.commit()
+		
+		return len(matches)
