@@ -77,7 +77,7 @@ class MudrithaData:
 		"""
 		import sinhaladict
 		db = self.get_db()
-		endings = mudutils.
+		endings = mudutils.get_common_endings()
 		for item in sinhaladict.sinhaladict:
 			if len(item) > 2:
 				if(item.endswith(endings)):
