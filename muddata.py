@@ -169,6 +169,7 @@ class MudrithaData:
 		db  = self.get_db()
 		cur = db.cursor()
 		matches = []
+		result = 0
 		
 		for term in terms:
 			cur.execute("""SELECT doc_id FROM document 
@@ -176,9 +177,15 @@ class MudrithaData:
 			row = cur.fetchone()
 			if (row != None):
 				matches.append((row[0], term[0]))
+				
+		try:
+			cur.executemany("""INSERT INTO docterm(doc_id, term_id, position) 
+			VALUES (?, ?, 0)""", matches)
+			db.commit()
+			result = len(matches)
+		except sqlite3.IntegrityError:
+			print 'IntegrityError, the document/term relationship already exists.'
+		except:
+			print 'Unexpected failure.'
 		
-		cur.executemany("""INSERT INTO docterm(doc_id, term_id, position) 
-		VALUES (?, ?, 0)""", matches)
-		db.commit()
-		
-		return len(matches)
+		return result
