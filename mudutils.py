@@ -30,3 +30,10 @@ def parse_html(url):
         'title' : title[0] if (len(title) > 0) else None,
         'image' : images[0] if (len(images) > 0) else None
     }
+    
+def get_common_endings(lang):
+	"""Get common ending sequences in language to eliminate from dictionary"""
+	
+	return ['යින්','න්නට','යන්','ච්චි','යම්','වක්','ලින්','රුන්','මෙන්','ර්ස්',
+	'ද්දී','න්ගේ','ත්‍ර','ල්ල','ත්වය','න්ස්','යක්','ල්ලා','න්නේ','යාව','න්ට්',
+	'වන්','මින්','ටිය','යානු','වරයා','යෙන්','ක්ස්','ගෙන්','වෙන්','යන්ට','කින්','වාදී','හිදී']
