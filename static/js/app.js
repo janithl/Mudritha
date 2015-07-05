@@ -33,9 +33,8 @@ var Mudritha = React.createClass({
 					<form>
 						<div className="form-group">
 							<label>Link URL</label>
-							<input type="text" className="form-control" placeholder="Link URL" />
+							<LinkInput />
 						</div>
-						<button type="button" className="btn btn-default">Submit</button>
 					</form>
 				</div>
 				<div className="col-md-3 col-xs-12">
@@ -115,6 +114,35 @@ var MessageInput = React.createClass({
 		return (
 			<textarea className="form-control message-input" placeholder="Type here..." 
 			rows="3" onChange={this.handleChange} onKeyDown={this.onKeyDown} value={this.state.text}/>
+		);
+	}
+});
+
+var LinkInput = React.createClass({
+	getInitialState: function() {
+		return {url: ''};
+	},
+	handleChange: function(event) {
+		this.setState({url: event.target.value});
+	},
+	onKeyDown: function(event) {
+		if(event.which === 13) {
+			event.preventDefault();
+			$.ajax({
+				url: './api/public/addlink/',
+				dataType: 'text',
+				type: 'POST',
+				data: {url: this.state.url},
+				success: function(data) {
+					this.setState({url: ''});
+				}.bind(this)
+			});
+		}
+	},
+	render: function() {
+		return (
+			<input type="text" className="form-control" placeholder="Link URL" 
+			onChange={this.handleChange} onKeyDown={this.onKeyDown} value={this.state.url}/>
 		);
 	}
 });

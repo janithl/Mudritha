@@ -52,18 +52,4 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js"></script>
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
 	<script type="text/jsx;harmony=true" src="static/js/app.js"></script>
-	<script type="text/javascript">
-	$('#link-input-button').on('click', function(e) {   
-		$.ajax({
-			url: './api/public/addlink/',
-			dataType: 'text',
-			type: 'POST',
-			data: {url: $('#link-input').val()},
-			success: function(data) {
-				//app.loadMessagesFromServer();
-				$('#link-input').val('');
-			}.bind(this)
-		});
-	});
-	</script>
 </html>
