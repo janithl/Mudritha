@@ -16,7 +16,7 @@
 		<![endif]-->
 		<style>
 		#main-content   {margin-top:60px;}
-		#message-thread {margin-top:20px;}
+		.message-thread {margin-top:20px;}
 		.message-image  {height:24px; width:24px; margin-right:6px;}
 		.navbar         {background-color:#f7b618;border-color:#d29a14;}
 		.navbar-brand   {padding:0 10px;}
@@ -44,22 +44,7 @@
 			</div><!-- /.container -->
 		</nav><!-- /.navbar -->
 
-		<div id="main-content" class="container-fluid">
-			<div class="col-md-3 col-xs-12"></div>
-			<div class="col-md-6 col-xs-12">
-				<form class="form-inline">
-					<div class="form-group">
-						<label for="link-input">Link URL</label>
-						<input type="text" class="form-control" id="link-input" placeholder="Link URL">
-					</div>
-					<button type="button" id="link-input-button" class="btn btn-default">Submit</button>
-				</form>
-			</div>
-			<div class="col-md-3 col-xs-12">
-				<textarea id="message-input" class="form-control" placeholder="Type here..." rows="3"></textarea>
-				<div id="message-thread"></div>
-			</div>
-		</div>
+		<div id="main-content"></div>
 	</body>
 
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -68,21 +53,6 @@
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
 	<script type="text/jsx;harmony=true" src="static/js/app.js"></script>
 	<script type="text/javascript">
-	$('#message-input').on('keypress', function(e) {
-		if(e.which === 13 && !e.shiftKey) {
-			$.ajax({
-				url: './api/public/addmessage/',
-				dataType: 'text',
-				type: 'POST',
-				data: {text: $('#message-input').val()},
-				success: function(data) {
-					app.loadMessagesFromServer();
-					$('#message-input').val('');
-				}.bind(this)
-			});
-		}
-	});
-
 	$('#link-input-button').on('click', function(e) {   
 		$.ajax({
 			url: './api/public/addlink/',
