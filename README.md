@@ -1,19 +1,32 @@
-![Mudritha](https://raw.githubusercontent.com/janithl/mudritha/master/static/img/mudritha-logo-large.png)
+![Mudritha](https://raw.githubusercontent.com/janithl/mudritha/master/public/img/mudritha-logo-large.png)
 
 # Mudritha
 
-Mudritha is currently just a very unsecure echo server, 
-pretty much, with a DB to hold what people are saying.
+~~Mudritha is currently just a very unsecure echo server, 
+pretty much, with a DB to hold what people are saying.~~
 
 In the future, I hope it'll become a newsreader, an HN clone 
 for Sri Lankan news (grandiose ambitions seem to be a thing)
 
 # Setup
 
-Clone the repo, install Flask (`sudo pip intall Flask`). Copy 
-sampleconfig.py to mudconfig.py and change the variables in there 
-to secure your server. Then run `python mudritha.py` and open up a 
-browser at `http://localhost:5000` and start playing!
+Clone the repo, go inside and run `yarn install`. You can use 
+the following commands after that:
+
+```
+yarn start
+    Starts the development server.
+
+yarn build
+    Bundles the app into static files for production.
+
+yarn test
+    Starts the test runner.
+
+yarn eject
+    Removes this tool and copies build dependencies, configuration files
+    and scripts into the app directory. If you do this, you can’t go back!
+```
 
 # License
 

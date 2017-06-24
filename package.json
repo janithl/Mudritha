@@ -1,0 +1,24 @@
+{
+  "name": "mudritha",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://janithl.github.io/Mudritha",
+  "dependencies": {
+    "natural": "^0.5.4",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "semantic-ui-react": "^0.69.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.0.0",
+    "react-scripts": "1.0.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
+  }
+}
